@@ -5,6 +5,8 @@ A real-time monitoring dashboard for Redis keys with a Spring Boot backend and R
 **Version:** 2.0  
 **Last Updated:** November 8, 2025
 
+![img.png](doc_images/img.png)
+![img_1.png](doc_images/img_1.png)
 ---
 
 ## 📚 Documentation
