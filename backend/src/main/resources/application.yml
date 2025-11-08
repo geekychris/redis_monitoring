@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: redis-monitor-backend
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      timeout: 60000
+
+server:
+  port: 8080
+
+redis-monitor:
+  synthetic-data:
+    enabled: true
+    interval-ms: 2000

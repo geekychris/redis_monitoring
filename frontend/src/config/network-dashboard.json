@@ -1,0 +1,52 @@
+{
+  "name": "Network Monitoring",
+  "refreshInterval": 1500,
+  "widgets": [
+    {
+      "id": "active-connections",
+      "title": "Active Connections",
+      "redisKey": "metric:active_connections",
+      "type": "gauge",
+      "unit": "",
+      "min": 0,
+      "max": 100,
+      "width": 6,
+      "height": 1
+    },
+    {
+      "id": "requests-per-sec-chart",
+      "title": "Requests Per Second",
+      "redisKey": "metric:timeseries:requests_per_sec",
+      "type": "line-chart",
+      "width": 6,
+      "height": 2
+    },
+    {
+      "id": "total-requests",
+      "title": "Total Requests",
+      "redisKey": "metric:total_requests",
+      "type": "counter",
+      "format": "number",
+      "width": 4,
+      "height": 1
+    },
+    {
+      "id": "error-count",
+      "title": "Error Count",
+      "redisKey": "metric:error_count",
+      "type": "counter",
+      "format": "number",
+      "width": 4,
+      "height": 1
+    },
+    {
+      "id": "response-time",
+      "title": "Avg Response Time",
+      "redisKey": "metric:avg_response_time_ms",
+      "type": "counter",
+      "format": "milliseconds",
+      "width": 4,
+      "height": 1
+    }
+  ]
+}

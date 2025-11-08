@@ -1,0 +1,36 @@
+{
+  "name": "Minimal Dashboard",
+  "refreshInterval": 1000,
+  "widgets": [
+    {
+      "id": "cpu",
+      "title": "CPU %",
+      "redisKey": "metric:cpu_usage",
+      "type": "gauge",
+      "format": "percentage",
+      "unit": "%",
+      "min": 0,
+      "max": 100,
+      "width": 4,
+      "height": 1
+    },
+    {
+      "id": "requests",
+      "title": "Total Requests",
+      "redisKey": "metric:total_requests",
+      "type": "counter",
+      "format": "number",
+      "width": 4,
+      "height": 1
+    },
+    {
+      "id": "errors",
+      "title": "Errors",
+      "redisKey": "metric:error_count",
+      "type": "counter",
+      "format": "number",
+      "width": 4,
+      "height": 1
+    }
+  ]
+}
