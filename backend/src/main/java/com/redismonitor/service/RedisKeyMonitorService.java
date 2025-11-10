@@ -6,12 +6,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.Topic;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,6 +26,7 @@ public class RedisKeyMonitorService implements MessageListener {
     private final SimpMessagingTemplate messagingTemplate;
     
     private final Set<String> subscribedKeys = ConcurrentHashMap.newKeySet();
+    private final Map<String, Topic> keyTopics = new ConcurrentHashMap<>();
 
     public RedisKeyMonitorService(RedisTemplate<String, Object> redisTemplate,
                                   RedisMessageListenerContainer listenerContainer,
@@ -32,13 +34,6 @@ public class RedisKeyMonitorService implements MessageListener {
         this.redisTemplate = redisTemplate;
         this.listenerContainer = listenerContainer;
         this.messagingTemplate = messagingTemplate;
-    }
-
-    @PostConstruct
-    public void init() {
-        // Subscribe to all keyspace events
-        listenerContainer.addMessageListener(this, new PatternTopic("__keyspace@0__:*"));
-        log.info("Redis keyspace notification listener initialized");
     }
 
     @Override
@@ -80,8 +75,20 @@ public class RedisKeyMonitorService implements MessageListener {
     }
 
     public void subscribeToKey(String key) {
+        if (subscribedKeys.contains(key)) {
+            log.debug("Already subscribed to key: {}", key);
+            return;
+        }
+        
         subscribedKeys.add(key);
-        log.info("Subscribed to key: {}", key);
+        
+        // Subscribe to Redis keyspace notifications for this specific key
+        String channelPattern = "__keyspace@0__:" + key;
+        Topic topic = new ChannelTopic(channelPattern);
+        keyTopics.put(key, topic);
+        listenerContainer.addMessageListener(this, topic);
+        
+        log.info("Subscribed to Redis keyspace notifications for key: {}", key);
         
         // Send initial value
         try {
@@ -99,8 +106,19 @@ public class RedisKeyMonitorService implements MessageListener {
     }
 
     public void unsubscribeFromKey(String key) {
+        if (!subscribedKeys.contains(key)) {
+            log.debug("Not subscribed to key: {}", key);
+            return;
+        }
+        
         subscribedKeys.remove(key);
-        log.info("Unsubscribed from key: {}", key);
+        
+        // Unsubscribe from Redis keyspace notifications for this specific key
+        Topic topic = keyTopics.remove(key);
+        if (topic != null) {
+            listenerContainer.removeMessageListener(this, topic);
+            log.info("Unsubscribed from Redis keyspace notifications for key: {}", key);
+        }
     }
 
     public Set<String> getSubscribedKeys() {
