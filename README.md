@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" alt="Redis Monitoring logo" width="180">
+</p>
+
 # Redis Monitor Dashboard
 
 A real-time monitoring dashboard for Redis keys with a Spring Boot backend and React frontend. Monitor counters, gauges, and time-series metrics with live updates via WebSocket.
